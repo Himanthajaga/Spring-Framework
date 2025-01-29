@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/_05Configuration/pom.xml" />
         <option value="$PROJECT_DIR$/_06Runtime_Value_Injection/pom.xml" />
         <option value="$PROJECT_DIR$/_07Spring_environment/pom.xml" />
+        <option value="$PROJECT_DIR$/_08Spring_Web_Mvc/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

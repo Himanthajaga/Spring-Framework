@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="_05Configuration" />
+        <module name="_08Spring_Web_Mvc" />
         <module name="_06Runtime_Value_Injection" />
         <module name="_07Spring_environment" />
       </profile>
