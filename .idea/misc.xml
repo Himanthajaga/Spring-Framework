@@ -11,11 +11,15 @@
         <option value="$PROJECT_DIR$/_06Runtime_Value_Injection/pom.xml" />
         <option value="$PROJECT_DIR$/_07Spring_environment/pom.xml" />
         <option value="$PROJECT_DIR$/_08Spring_Web_Mvc/pom.xml" />
+        <option value="$PROJECT_DIR$/_09Rest_Controller/pom.xml" />
+        <option value="$PROJECT_DIR$/_10FrontEnd/pom.xml" />
+        <option value="$PROJECT_DIR$/_11ApiBackend/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/_04Full_Mode_vs_lightMode/_05Configuraton/pom.xml" />
+        <option value="$PROJECT_DIR$/_10FrontEnd/pom.xml" />
       </set>
     </option>
     <option name="workspaceImportForciblyTurnedOn" value="true" />

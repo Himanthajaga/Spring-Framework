@@ -9,11 +9,14 @@
         <module name="_05Configuration" />
         <module name="_08Spring_Web_Mvc" />
         <module name="_06Runtime_Value_Injection" />
+        <module name="_09Rest_Controller" />
+        <module name="_11ApiBackend" />
         <module name="_07Spring_environment" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="_05Configuraton" target="21" />
+      <module name="_10FrontEnd" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>

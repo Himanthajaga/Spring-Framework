@@ -1,10 +1,10 @@
 package lk.ijse.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
+//views return krnne @controller eken
+@Controller
 @RequestMapping("/hello")
 public class HelloController {
 
@@ -13,6 +13,6 @@ public class HelloController {
     }
     @GetMapping
     public String hello(){
-        return "Hello Spring Boot";
+        return "index";
     }
 }
