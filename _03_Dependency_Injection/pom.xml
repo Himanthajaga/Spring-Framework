@@ -11,9 +11,7 @@
 
     <artifactId>_03_Dependency_Injection</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>_03_Dependency_injection</module>
-    </modules>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
         <dependency>

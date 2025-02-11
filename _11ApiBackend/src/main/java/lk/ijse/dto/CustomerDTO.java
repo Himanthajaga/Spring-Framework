@@ -5,8 +5,17 @@ public class CustomerDTO {
     private String name;
     private String address;
     private int age;
+    private String image;
 
     public CustomerDTO() {
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public CustomerDTO(String id, String name, String address, int age) {
