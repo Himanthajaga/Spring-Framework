@@ -27,6 +27,10 @@
           <label for="customerAge">Age</label>
           <input type="number" class="form-control" id="customerAge" placeholder="Enter Age">
         </div>
+        <div class="form-group">
+          <label for="customerImage">Image</label>
+          <input type="file" class="form-control" id="customerImage" accept="image/*">
+        </div>
         <button type="button" class="btn btn-primary" onclick="saveCustomer()">Save</button>
         <button type="button" class="btn btn-warning" onclick="updateCustomer()">Update</button>
         <button type="button" class="btn btn-danger" onclick="deleteCustomer()">Delete</button>
@@ -40,6 +44,7 @@
           <th>Name</th>
           <th>Address</th>
           <th>Age</th>
+          <th>Image</th>
         </tr>
         </thead>
         <tbody id="customerTableBody">
@@ -57,7 +62,8 @@
       id: $('#customerId').val(),
       name: $('#customerName').val(),
       address: $('#customerAddress').val(),
-      age: $('#customerAge').val()
+      age: $('#customerAge').val(),
+      image: $('#customerImage')[0].files[0] ? URL.createObjectURL($('#customerImage')[0].files[0]) : ''
     };
 
     $.ajax({
@@ -81,7 +87,8 @@
       id: $('#customerId').val(),
       name: $('#customerName').val(),
       address: $('#customerAddress').val(),
-      age: $('#customerAge').val()
+      age: $('#customerAge').val(),
+      image: $('#customerImage')[0].files[0] ? URL.createObjectURL($('#customerImage')[0].files[0]) : ''
     };
 
     $.ajax({
@@ -125,11 +132,12 @@
         const tableBody = $('#customerTableBody');
         tableBody.empty();
         customers.forEach(customer => {
-          const row = `<tr onclick="loadCustomer('${customer.id}', '${customer.name}', '${customer.address}', ${customer.age})">
+          const row = `<tr onclick="loadCustomer('${customer.id}', '${customer.name}', '${customer.address}', ${customer.age}, '${customer.image}')">
           <td>${customer.id}</td>
           <td>${customer.name}</td>
           <td>${customer.address}</td>
           <td>${customer.age}</td>
+          <td><img src="${customer.image}" alt="Customer Image" width="50" height="50"></td>
         </tr>`;
           tableBody.append(row);
         });
@@ -145,13 +153,15 @@
     $('#customerName').val('');
     $('#customerAddress').val('');
     $('#customerAge').val('');
+    $('#customerImage').val('');
   }
 
-  function loadCustomer(id, name, address, age) {
+  function loadCustomer(id, name, address, age, image) {
     $('#customerId').val(id);
     $('#customerName').val(name);
     $('#customerAddress').val(address);
     $('#customerAge').val(age);
+    $('#customerImage').val('');
   }
 
   $(document).ready(function() {
