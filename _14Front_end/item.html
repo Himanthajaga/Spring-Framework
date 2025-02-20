@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Item Manage</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Item Management</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="item.html">Items</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="placeorder.html">Place Order</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form id="itemForm" class="mt-4">
+                <div class="form-group">
+                    <label for="itemCode">Code</label>
+                    <input type="text" class="form-control" id="itemCode" placeholder="Enter Code">
+                </div>
+                <div class="form-group">
+                    <label for="itemName">Description</label>
+                    <input type="text" class="form-control" id="itemName" placeholder="Enter Name">
+                </div>
+                <div class="form-group">
+                    <label for="itemQty">Qty</label>
+                    <input type="text" class="form-control" id="itemQty" placeholder="Enter Qty">
+                </div>
+                <div class="form-group">
+                    <label for="itemPrice">Price</label>
+                    <input type="text" class="form-control" id="itemPrice" placeholder="Enter Price">
+                </div>
+                <button type="button" class="btn btn-primary" onclick="saveItem()">Save</button>
+                <button type="button" class="btn btn-warning" onclick="updateItem()">Update</button>
+                <button type="button" class="btn btn-danger" onclick="deleteItem()">Delete</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <table class="table table-striped mt-4">
+                <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                </tr>
+                </thead>
+                <tbody id="itemTableBody">
+                <!-- Item rows will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function saveItem() {
+        const item = {
+            code: $('#itemCode').val(),
+            description: $('#itemName').val(),
+            qtyOnHand: $('#itemQty').val(),
+            unitPrice: $('#itemPrice').val(),
+        };
+
+        if (!item.code || !item.description || !item.qtyOnHand || !item.unitPrice) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/item/save',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(item),
+            success: function (resp) {
+                if (resp) {
+                    alert('Item has been saved successfully');
+                    clearFields();
+                    refreshTable();
+                } else {
+                    alert('Failed to save the item');
+                }
+            },
+            error: function (error) {
+                console.error('Error saving item:', error);
+            }
+        });
+    }
+
+    function updateItem() {
+        const item = {
+            code: $('#itemCode').val(),
+            description: $('#itemName').val(),
+            qtyOnHand: $('#itemQty').val(),
+            unitPrice: $('#itemPrice').val(),
+        };
+
+        if (!item.code || !item.description || !item.qtyOnHand || !item.unitPrice) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/item/update',
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(item),
+            success: function (resp) {
+                if (resp) {
+                    alert('Item has been updated successfully');
+                    updateTableRow(item);
+                    clearFields();
+                } else {
+                    alert('Failed to update the item');
+                }
+            },
+            error: function (error) {
+                console.error('Error updating item:', error);
+            }
+        });
+    }
+
+    function deleteItem() {
+        const itemCode = $('#itemCode').val();
+
+        $.ajax({
+            url: `http://localhost:8080/api/v1/item/delete/${itemCode}`,
+            method: 'DELETE',
+            success: function (resp) {
+                if (resp) {
+                    alert('Item has been deleted successfully');
+                    clearFields();
+                    refreshTable();
+                } else {
+                    alert('Failed to delete the item');
+                }
+            },
+            error: function (error) {
+                console.error('Error deleting item:', error);
+            }
+        });
+    }
+
+    function refreshTable() {
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/item/get',
+            type: 'GET',
+            success: function(items) {
+                const tableBody = $('#itemTableBody');
+                tableBody.empty();
+                items.forEach(item => {
+                    const row = `<tr onclick="loadItem('${item.code}', '${item.description}', '${item.qtyOnHand}', '${item.unitPrice}')">
+                    <td>${item.code}</td>
+                    <td>${item.description}</td>
+                    <td>${item.qtyOnHand}</td>
+                    <td>${item.unitPrice}</td>
+                </tr>`;
+                    tableBody.append(row);
+                });
+            },
+            error: function(error) {
+                console.error('Error fetching items:', error);
+            }
+        });
+    }
+
+    function updateTableRow(item) {
+        const row = $(`#itemTableBody tr:contains(${item.code})`);
+        row.find('td:eq(1)').text(item.description);
+        row.find('td:eq(2)').text(item.qtyOnHand);
+        row.find('td:eq(3)').text(item.unitPrice);
+    }
+
+
+    function clearFields() {
+        $('#itemCode').val('');
+        $('#itemName').val('');
+        $('#itemQty').val('');
+        $('#itemPrice').val('');
+    }
+
+    function loadItem(code, description, qtyOnHand, unitPrice) {
+        $('#itemCode').val(code);
+        $('#itemName').val(description);
+        $('#itemQty').val(qtyOnHand);
+        $('#itemPrice').val(unitPrice);
+    }
+
+    $(document).ready(function() {
+        refreshTable();
+    });
+</script>
+</body>
+</html>

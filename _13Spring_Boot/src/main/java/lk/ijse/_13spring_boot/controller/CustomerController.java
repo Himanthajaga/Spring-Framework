@@ -1,7 +1,7 @@
 package lk.ijse._13spring_boot.controller;
 
 import lk.ijse._13spring_boot.dto.CustomerDTO;
-import lk.ijse._13spring_boot.service.CustomerService;
+import lk.ijse._13spring_boot.service.impl.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,9 +9,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/customer")
+@CrossOrigin(origins = "http://localhost:63342")
 public class CustomerController {
     @Autowired
-    private CustomerService customerService;
+    private CustomerServiceImpl customerService;
     @PostMapping(path = "/save")
     public boolean getCustomer(@RequestBody CustomerDTO customerDTO){
         System.out.println(customerDTO);
