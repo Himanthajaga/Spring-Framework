@@ -72,7 +72,7 @@
         };
 
         $.ajax({
-            url: 'http://localhost:8080/api/v1/item/save',
+            url: 'http://localhost:8080/api/v1/customer/save',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(customer),
@@ -95,7 +95,7 @@
         };
 
         $.ajax({
-            url: 'http://localhost:8080/api/v1/item/update',
+            url: 'http://localhost:8080/api/v1/customer/update',
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(customer),
@@ -131,17 +131,22 @@
         $.ajax({
             url: 'http://localhost:8080/api/v1/customer/get',
             type: 'GET',
-            success: function(customers) {
-                const tableBody = $('#customerTableBody');
-                tableBody.empty();
-                customers.forEach(customer => {
-                    const row = `<tr onclick="loadCustomer('${customer.id}', '${customer.name}', '${customer.address}')">
+            success: function(response) {
+                if (response.data && Array.isArray(response.data)) {
+                    const customers = response.data;
+                    const tableBody = $('#customerTableBody');
+                    tableBody.empty();
+                    customers.forEach(customer => {
+                        const row = `<tr onclick="loadCustomer('${customer.id}', '${customer.name}', '${customer.address}')">
                         <td>${customer.id}</td>
                         <td>${customer.name}</td>
                         <td>${customer.address}</td>
                     </tr>`;
-                    tableBody.append(row);
-                });
+                        tableBody.append(row);
+                    });
+                } else {
+                    console.error('Invalid response format:', response);
+                }
             },
             error: function(error) {
                 console.error('Error fetching customers:', error);

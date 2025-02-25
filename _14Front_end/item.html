@@ -160,18 +160,23 @@
         $.ajax({
             url: 'http://localhost:8080/api/v1/item/get',
             type: 'GET',
-            success: function(items) {
-                const tableBody = $('#itemTableBody');
-                tableBody.empty();
-                items.forEach(item => {
-                    const row = `<tr onclick="loadItem('${item.code}', '${item.description}', '${item.qtyOnHand}', '${item.unitPrice}')">
-                    <td>${item.code}</td>
-                    <td>${item.description}</td>
-                    <td>${item.qtyOnHand}</td>
-                    <td>${item.unitPrice}</td>
-                </tr>`;
-                    tableBody.append(row);
-                });
+            success: function(response) {
+                if (response.data && Array.isArray(response.data)) {
+                    const items = response.data;
+                    const tableBody = $('#itemTableBody');
+                    tableBody.empty();
+                    items.forEach(item => {
+                        const row = `<tr onclick="loadItem('${item.code}', '${item.description}', '${item.qtyOnHand}', '${item.unitPrice}')">
+                        <td>${item.code}</td>
+                        <td>${item.description}</td>
+                        <td>${item.qtyOnHand}</td>
+                        <td>${item.unitPrice}</td>
+                    </tr>`;
+                        tableBody.append(row);
+                    });
+                } else {
+                    console.error('Invalid response format:', response);
+                }
             },
             error: function(error) {
                 console.error('Error fetching items:', error);
@@ -180,7 +185,9 @@
     }
 
     function updateTableRow(item) {
-        const row = $(`#itemTableBody tr:contains(${item.code})`);
+        const row = $(`#itemTableBody tr`).filter(function() {
+            return $(this).find('td:eq(0)').text() === item.code;
+        });
         row.find('td:eq(1)').text(item.description);
         row.find('td:eq(2)').text(item.qtyOnHand);
         row.find('td:eq(3)').text(item.unitPrice);

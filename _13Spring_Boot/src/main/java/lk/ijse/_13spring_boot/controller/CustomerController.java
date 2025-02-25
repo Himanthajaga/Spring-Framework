@@ -2,6 +2,7 @@ package lk.ijse._13spring_boot.controller;
 
 import lk.ijse._13spring_boot.dto.CustomerDTO;
 import lk.ijse._13spring_boot.service.impl.CustomerServiceImpl;
+import lk.ijse._13spring_boot.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,21 +15,23 @@ public class CustomerController {
     @Autowired
     private CustomerServiceImpl customerService;
     @PostMapping(path = "/save")
-    public boolean getCustomer(@RequestBody CustomerDTO customerDTO){
+    public ResponseUtil getCustomer(@RequestBody CustomerDTO customerDTO) {
         System.out.println(customerDTO);
-        boolean res = customerService.save(customerDTO);
-        return res;
+
+           return new ResponseUtil(201,"customer saved successfully",null);
     }
     @GetMapping(path = "/get")
-    public List<CustomerDTO> getAllCustomers(){
-        return customerService.getAll();
+    public ResponseUtil getAllCustomers(){
+       return new ResponseUtil(201,"customer saved successfully",customerService.getAll());
     }
     @DeleteMapping(path = "/delete/{id}")
-    public boolean deleteCustomer(@PathVariable int id){
-        return customerService.delete(id);
+    public ResponseUtil deleteCustomer(@PathVariable int id){
+        customerService.delete(id);
+        return new ResponseUtil(201,"Customer Deleted Successfully",null);
     }
     @PutMapping(path = "/update")
-    public boolean updateCustomer(@RequestBody CustomerDTO customerDTO){
-        return customerService.update(customerDTO);
+    public ResponseUtil updateCustomer(@RequestBody CustomerDTO customerDTO){
+        customerService.update(customerDTO);
+       return new ResponseUtil(201,"Customer Updated Successfully",null);
     }
 }

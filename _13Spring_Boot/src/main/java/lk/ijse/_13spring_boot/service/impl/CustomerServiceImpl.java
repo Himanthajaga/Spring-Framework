@@ -18,11 +18,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private ModelMapper modelMapper;
-    public boolean save (CustomerDTO customerDTO){
+    public void save (CustomerDTO customerDTO){
 //      Customer customer =   new Customer(customerDTO.getId(),customerDTO.getName(),customerDTO.getAddress());
-        Customer customer = modelMapper.map(customerDTO, Customer.class);
-        customerRepo.save(customer);
-        return true;
+        if (!customerRepo.existsById(customerDTO.getId())){
+            Customer customer = modelMapper.map(customerDTO, Customer.class);
+            customerRepo.save(customer);
+        }
+        throw new RuntimeException("Customer already exists");
     }
 
     public List<CustomerDTO> getAll() {
@@ -30,14 +32,22 @@ public class CustomerServiceImpl implements CustomerService {
                 customerRepo.findAll(),
                 new TypeToken<List<CustomerDTO>>(){}.getType());
     }
-    public boolean delete(int id){
-        customerRepo.deleteById(id);
-        return true;
+    public void delete(int id){
+        if (customerRepo.existsById(id)){
+            customerRepo.deleteById(id);
+        }
+        throw new RuntimeException("Customer not found");
     }
 
-    public boolean update(CustomerDTO customerDTO) {
+    public void update(CustomerDTO customerDTO) {
 //        Customer customer = new Customer(customerDTO.getId(),customerDTO.getName(),customerDTO.getAddress());
-        customerRepo.save(modelMapper.map(customerDTO, Customer.class));
-        return true;
+       if (
+                customerRepo.existsById(customerDTO.getId())
+         ){
+              Customer customer = modelMapper.map(customerDTO, Customer.class);
+              customerRepo.save(customer);
+              return;
+         }
+        throw new RuntimeException("Customer not found");
     }
 }
