@@ -48,7 +48,7 @@ function fetchItemData() {
             $itemSelect.empty();
             $itemSelect.append('<option value="">Select Item</option>');
             for (const item of response.data || response) {
-                $itemSelect.append(`<option value="${item.itemCode}" data-name="${item.description}" data-price="${item.unitPrice}" data-qty="${item.qtyOnHand}">${item.itemCode}</option>`);
+                $itemSelect.append(`<option value="${item.itemcode}" data-name="${item.description}" data-price="${item.unitPrice}" data-qty="${item.qtyOnHand}">${item.itemcode}</option>`);
             }
         },
         error: function (error) {
@@ -83,6 +83,52 @@ $('#orderQty').on('input', function () {
     const total = qty * price;
     $('#totalPrice').val(total.toFixed(2));
 });
+
+// Add item to the table
+$('#addItemBtn').click(function () {
+    if (validateForm()) {
+        const orderId = $('#orderId').val();
+        const customerName = $('#customerName').val();
+        const itemCode = $('#itemCode').val();
+        const itemName = $('#itemName').val();
+        const itemPrice = $('#itemPrice').val();
+        const itemQty = $('#orderQty').val();
+        const totalPrice = $('#totalPrice').val();
+
+        const row = `<tr>
+            <td>${orderId}</td>
+            <td>${customerName}</td>
+            <td>${itemName}</td>
+            <td>${itemQty}</td>
+            <td>${itemPrice}</td>
+            <td>${totalPrice}</td>
+            <td>${new Date().toLocaleString()}</td>
+            <td><button class="btn btn-danger btn-sm delete-btn">Delete</button></td>
+        </tr>`;
+        $('#orderTable').append(row);
+
+        clearFormFields();
+    }
+});
+
+// Delete item from the table
+$('#orderTable').on('click', '.delete-btn', function () {
+    $(this).closest('tr').remove();
+});
+
+// Validate form fields
+function validateForm() {
+    const orderId = $('#orderId').val();
+    const customerId = $('#customerId').val();
+    const itemCode = $('#itemCode').val();
+    const itemQty = $('#orderQty').val();
+
+    if (!orderId || !customerId || !itemCode || !itemQty) {
+        alert('Please fill in all required fields.');
+        return false;
+    }
+    return true;
+}
 
 // Save order
 function saveOrder() {
@@ -149,6 +195,7 @@ function fetchOrderTable() {
                             <td>${unitPrice}</td>
                             <td>${detail.subTotal}</td>
                             <td>${order.dateTime}</td>
+                            <td><button class="btn btn-danger btn-sm delete-btn">Delete</button></td>
                         </tr>
                     `);
                 }
@@ -227,3 +274,11 @@ $('#orderQty').on('input', function () {
         $('#placeOrderBtn').attr('disabled', false);
     }
 });
+
+function clearFormFields() {
+    $('#itemCode').val('');
+    $('#itemName').val('');
+    $('#itemPrice').val('');
+    $('#orderQty').val('');
+    $('#totalPrice').val('');
+}
