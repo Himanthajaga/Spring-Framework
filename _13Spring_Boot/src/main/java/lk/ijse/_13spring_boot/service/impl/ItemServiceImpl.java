@@ -31,8 +31,8 @@ public class ItemServiceImpl implements ItemService {
                 new TypeToken<List<ItemDTO>>(){}.getType());
     }
     public void delete(int id){
-        if (itemRepo.existsById(id)){
-            itemRepo.deleteById(id);
+        if (itemRepo.existsById(String.valueOf(id))){
+            itemRepo.deleteById(String.valueOf(id));
         }
         throw new RuntimeException("Item not found");
     }

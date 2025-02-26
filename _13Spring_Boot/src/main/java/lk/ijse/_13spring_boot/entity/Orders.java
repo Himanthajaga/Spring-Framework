@@ -1,17 +1,29 @@
-package lk.ijse._13spring_boot.dto;
+package lk.ijse._13spring_boot.entity;
 
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class OrderDTO {
+@Entity
+@Table(name = "orders")
+public class Orders {
+    @Id
     private String orderId;
-    private String dateTime;
-    private String customerId;
-    private List<OrderDetailDTO> orderDetails;
 
-    public OrderDTO() {
+    @Column(nullable = false)
+    private String dateTime;
+
+    @Column(nullable = false)
+    private String customerId;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderDetail> orderDetails = new ArrayList<>();
+
+    public Orders() {
     }
 
-    public OrderDTO(String orderId, String dateTime, String customerId, List<OrderDetailDTO> orderDetails) {
+    public Orders(String orderId, String dateTime, String customerId, List<OrderDetail> orderDetails) {
         this.orderId = orderId;
         this.dateTime = dateTime;
         this.customerId = customerId;
@@ -42,17 +54,17 @@ public class OrderDTO {
         this.customerId = customerId;
     }
 
-    public List<OrderDetailDTO> getOrderDetails() {
+    public List<OrderDetail> getOrderDetails() {
         return orderDetails;
     }
 
-    public void setOrderDetails(List<OrderDetailDTO> orderDetails) {
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
         this.orderDetails = orderDetails;
     }
 
     @Override
     public String toString() {
-        return "OrderDTO{" +
+        return "Orders{" +
                 "orderId='" + orderId + '\'' +
                 ", dateTime='" + dateTime + '\'' +
                 ", customerId='" + customerId + '\'' +

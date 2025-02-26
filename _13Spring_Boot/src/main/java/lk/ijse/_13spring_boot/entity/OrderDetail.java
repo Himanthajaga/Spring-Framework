@@ -3,40 +3,50 @@ package lk.ijse._13spring_boot.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "order_detail")
 public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(nullable = false)
+    private String itemCode;
+
+    @Column(nullable = false)
     private int qty;
-    private double unitPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "oid")
-    private Order order;
+    @Column(nullable = false)
+    private double subTotal;
 
-    @ManyToOne
-    @JoinColumn(name = "item_id", referencedColumnName = "code")
-    private Item item;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Orders order;
 
     public OrderDetail() {
     }
 
-    public OrderDetail(int qty, double unitPrice, Order order, Item item) {
+    public OrderDetail(int id, String itemCode, int qty, double subTotal, Orders order) {
+        this.id = id;
+        this.itemCode = itemCode;
         this.qty = qty;
-        this.unitPrice = unitPrice;
+        this.subTotal = subTotal;
         this.order = order;
-        this.item = item;
-    }
-    public int getId() {
-        return Math.toIntExact(id);
     }
 
-    public void setUnitPrice(double unitPrice) {
-        this.unitPrice = unitPrice;
+    public int getId() {
+        return id;
     }
 
     public void setId(int id) {
-        this.id = (int) id;
+        this.id = id;
+    }
+
+    public String getItemCode() {
+        return itemCode;
+    }
+
+    public void setItemCode(String itemCode) {
+        this.itemCode = itemCode;
     }
 
     public int getQty() {
@@ -47,32 +57,30 @@ public class OrderDetail {
         this.qty = qty;
     }
 
-    public double getUnitPrice() {
-        return unitPrice;
+    public double getSubTotal() {
+        return subTotal;
     }
 
-public Order getOrder() {
-    return order;
-}
-public void setOrder(Order order) {
-    this.order = order;
-}
+    public void setSubTotal(double subTotal) {
+        this.subTotal = subTotal;
+    }
 
-public Item getItem() {
-    return item;
-}
+    public Orders getOrder() {
+        return order;
+    }
 
-public void setItem(Item item) {
-    this.item = item;
-}
+    public void setOrder(Orders order) {
+        this.order = order;
+    }
 
-@Override
-public String toString() {
-    return "OrderDetail{" +
-            "id=" + id +
-            ", unitPrice=" + unitPrice +
-            ", order=" + order +
-            ", item=" + item +
-            '}';
-}
+    @Override
+    public String toString() {
+        return "OrderDetail{" +
+                "id=" + id +
+                ", itemCode='" + itemCode + '\'' +
+                ", qty=" + qty +
+                ", subTotal=" + subTotal +
+                ", order=" + order +
+                '}';
+    }
 }

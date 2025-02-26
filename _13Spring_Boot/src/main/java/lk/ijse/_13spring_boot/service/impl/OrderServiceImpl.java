@@ -1,80 +1,144 @@
 package lk.ijse._13spring_boot.service.impl;
 
+import jakarta.transaction.Transactional;
 import lk.ijse._13spring_boot.dto.OrderDTO;
 import lk.ijse._13spring_boot.dto.OrderDetailDTO;
-import lk.ijse._13spring_boot.entity.Customer;
 import lk.ijse._13spring_boot.entity.Item;
-import lk.ijse._13spring_boot.entity.Order;
 import lk.ijse._13spring_boot.entity.OrderDetail;
-import lk.ijse._13spring_boot.repository.CustomerRepo;
+import lk.ijse._13spring_boot.entity.Orders;
 import lk.ijse._13spring_boot.repository.ItemRepo;
+import lk.ijse._13spring_boot.repository.OrderDetailsRepo;
 import lk.ijse._13spring_boot.repository.OrderRepo;
 import lk.ijse._13spring_boot.service.OrderService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.logging.Logger;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class OrderServiceImpl implements OrderService {
-
-    private static final Logger logger = Logger.getLogger(OrderServiceImpl.class.getName());
+    @Autowired
+    private OrderRepo ordersRepo;
 
     @Autowired
-    private OrderRepo orderRepo;
+    private OrderDetailsRepo orderDetailsRepo;
 
     @Autowired
     private ItemRepo itemRepo;
 
     @Autowired
-    private CustomerRepo customerRepo;
+    private ModelMapper modelMapper;
 
     @Override
-    public void placeOrder(OrderDTO order) {
-        logger.info("Received OrderDTO: " + order);
+    @Transactional
+    public void saveOrder(OrderDTO orderDTO) {
+        try {
+            // Validation
+            if (orderDTO == null || orderDTO.getOrderId() == null ||
+                    orderDTO.getOrderDetails() == null || orderDTO.getOrderDetails().isEmpty()) {
+                throw new RuntimeException("Invalid order data. Please check.");
+            }
 
-        if (order.getCustomerId() <= 0) {
-            logger.severe("Invalid customer ID: " + order.getCustomerId());
-            throw new RuntimeException("Invalid customer ID");
+            if (ordersRepo.existsById(orderDTO.getOrderId())) {
+                throw new RuntimeException("Order ID already exists.");
+            }
+
+            if (!checkItemsInStock(orderDTO.getOrderDetails())) {
+                throw new RuntimeException("Items are out of stock.");
+            }
+
+            // Create Order
+            Orders order = new Orders();
+            order.setOrderId(orderDTO.getOrderId());
+            order.setDateTime(orderDTO.getDateTime() != null ?
+                    orderDTO.getDateTime() :
+                    LocalDateTime.now().toString());
+            order.setCustomerId(orderDTO.getCustomerId());
+
+            // Create OrderDetails and update item quantities
+            List<OrderDetail> orderDetails = new ArrayList<>();
+
+            for (OrderDetailDTO detailDTO : orderDTO.getOrderDetails()) {
+                // Get item and check stock
+                Item item = itemRepo.findById(detailDTO.getItemCode())
+                        .orElseThrow(() -> new RuntimeException("Item not found: " + detailDTO.getItemCode()));
+
+                // Create order detail
+                OrderDetail detail = new OrderDetail();
+                detail.setItemCode(detailDTO.getItemCode());
+                detail.setQty(detailDTO.getQty());
+                detail.setSubTotal(detailDTO.getSubTotal());
+                detail.setOrder(order);
+                orderDetails.add(detail);
+
+                // Update item quantity
+                item.setQtyOnHand(item.getQtyOnHand() - detailDTO.getQty());
+                itemRepo.save(item);
+            }
+
+            order.setOrderDetails(orderDetails);
+            ordersRepo.save(modelMapper.map(order, Orders.class));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save order: " + e.getMessage());
         }
+    }
 
-        Optional<Customer> customerOptional = customerRepo.findById(order.getCustomerId());
-        if (customerOptional.isEmpty()) {
-            logger.severe("Customer not found with ID: " + order.getCustomerId());
-            throw new RuntimeException("Customer not found");
-        }
+    @Override
+    public boolean checkItemsInStock(List<OrderDetailDTO> orderDetails) {
+        for (OrderDetailDTO detail : orderDetails) {
+            Item item = itemRepo.findById(detail.getItemCode()).orElse(null);
 
-        Order o = new Order();
-        o.setOid(order.getOid());
-        o.setDate(order.getDate());
-        o.setCustomer(customerOptional.get());
-
-        // Process order details
-        o.setOrderDetails(new ArrayList<>());
-        for (OrderDetailDTO od : order.getOrderDetails()) {
-            Optional<Item> itemOptional = itemRepo.findById(od.getItemCode());
-            if (itemOptional.isPresent()) {
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setItem(itemOptional.get());
-                orderDetail.setQty(od.getQty());
-                orderDetail.setUnitPrice(od.getUnitPrice());
-                orderDetail.setOrder(o);
-                o.getOrderDetails().add(orderDetail);
-            } else {
-                logger.severe("Item not found with code: " + od.getItemCode());
-                throw new RuntimeException("Item not found");
+            if (item == null || item.getQtyOnHand() < detail.getQty()) {
+                throw new RuntimeException("Item " + detail.getItemCode() + " is out of stock.");
             }
         }
+        return true;
+    }
 
-        try {
-            orderRepo.save(o);
-            logger.info("Order placed successfully with ID: " + o.getOid());
-        } catch (ObjectOptimisticLockingFailureException e) {
-            logger.severe("Failed to place the order. Please try again");
-            throw new RuntimeException("Failed to place the order. Please try again");
-        }
+    @Override
+    @Transactional
+    public OrderDTO getOrderById(String orderId) {
+        return ordersRepo.findById(orderId)
+                .map(this::mapToDTO)
+                .orElse(null);
+    }
+
+    @Override
+   @Transactional
+    public List<OrderDTO> getAllOrders() {
+        return ordersRepo.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private OrderDTO mapToDTO(Orders order) {
+        List<OrderDetailDTO> orderDetailDTOs = order.getOrderDetails().stream()
+                .map(this::mapToDetailDTO)
+                .collect(Collectors.toList());
+
+        return new OrderDTO(
+                order.getOrderId(),
+                order.getDateTime(),
+                order.getCustomerId(),
+                orderDetailDTOs
+        );
+    }
+
+    private OrderDetailDTO mapToDetailDTO(OrderDetail detail) {
+        return new OrderDetailDTO(
+                detail.getId(),
+                detail.getItemCode(),
+                detail.getQty(),
+                detail.getSubTotal(),
+                detail.getOrder().getOrderId()
+        );
     }
 }
