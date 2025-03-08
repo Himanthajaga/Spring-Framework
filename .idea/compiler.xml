@@ -8,6 +8,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="_05Configuration" />
+        <module name="_17_Spring_Loggins" />
+        <module name="_15Spring_Security" />
+        <module name="_16Spring_Boot_Security" />
         <module name="_08Spring_Web_Mvc" />
         <module name="_12Spring_Data_Jpa" />
         <module name="_06Runtime_Value_Injection" />
@@ -28,12 +31,18 @@
     <bytecodeTargetLevel>
       <module name="_05Configuraton" target="21" />
       <module name="_10FrontEnd" target="21" />
+      <module name="_15SpringSecurity" target="17" />
+      <module name="_16Spring_Boot_Bean_Validation" target="21" />
       <module name="untitled" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="_13Spring_Boot" options="-parameters" />
+      <module name="_15SpringSecurity" options="-parameters" />
+      <module name="_15Spring_Security" options="-parameters" />
+      <module name="_16Spring_Boot_Security" options="-parameters" />
+      <module name="_17_Spring_Loggins" options="-parameters" />
     </option>
   </component>
 </project>

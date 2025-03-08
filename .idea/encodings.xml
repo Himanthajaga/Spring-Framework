@@ -21,6 +21,13 @@
     <file url="file://$PROJECT_DIR$/_11ApiBackend/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/_12Spring_Data_Jpa/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/_12Spring_Data_Jpa/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/_13Spring_Boot/_15Spring_Security/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/_13Spring_Boot/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/_15SpringSecurity/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/_15Spring_Security/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/_16Spring_Boot_Bean_Validation/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/_16Spring_Boot_Bean_Validation/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/_16Spring_Boot_Security/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/_17_Spring_Loggins/src/main/java" charset="UTF-8" />
   </component>
 </project>

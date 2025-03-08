@@ -22,6 +22,9 @@
         <li class="nav-item">
             <a class="nav-link" href="placeorder.html">Place Order</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="all_orders.html">All Orders</a>
+        </li>
     </ul>
     </div>
 </nav>
@@ -123,6 +126,24 @@
                 </div>
                 <div class="modal-body text-center p-0 mb-2">
                     Are you sure you want to place this order?
+                    <div class="table-responsive mt-3">
+                        <table class="table table-borderless table-hover" id="orderConfirmTable">
+                            <thead class="border-bottom border-dark">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total Price</th>
+                                <th>Order Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Dynamic order rows will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-center gap-3 border-0">
                     <button type="button" class="btn btn-secondary bg-secondary-subtle text-black border-0 rounded-pill" data-bs-dismiss="modal">

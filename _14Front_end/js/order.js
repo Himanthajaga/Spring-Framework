@@ -5,19 +5,35 @@ $(document).ready(function () {
     setDateTime();
     fetchOrderTable();
     generateOrderId();
+
+    // Add event listener to open the order confirmation modal
+    $('#placeOrderBtn').click(function () {
+        populateOrderConfirmationModal();
+        $('#orderConfirmModal').modal('show');
+    });
 });
 
 function generateOrderId() {
-    const lastRow = $("#orderTable tr:last");
-
-    if (lastRow.length === 0) {
-        $("#orderId").val("ORD-001");
-        return;
-    }
-
-    const lastId = lastRow.find("td:eq(0)").text().trim(); // Get the last ID from the table
-    const num = parseInt(lastId.replace("ORD-", "")) + 1;
-    $("#orderId").val(`ORD-${String(num).padStart(3, "0")}`);
+    $.ajax({
+        url: "http://localhost:8080/api/v1/order/getAll",
+        method: "GET",
+        success: function (response) {
+            if (response && response.data && response.data.length > 0) {
+                // Extract the last order ID from the response
+                const lastOrder = response.data[response.data.length - 1];
+                const lastId = lastOrder.orderId || "ORD-000";
+                const num = parseInt(lastId.replace("ORD-", "")) + 1;
+                $("#orderId").val(`ORD-${String(num).padStart(3, "0")}`);
+            } else {
+                // If no orders exist, start with ORD-001
+                $("#orderId").val("ORD-001");
+            }
+        },
+        error: function (error) {
+            console.error("Error generating order ID:", error);
+            showAlert("danger", "Failed to generate order ID!");
+        }
+    });
 }
 
 // Load customer data into the dropdown
@@ -48,7 +64,7 @@ function fetchItemData() {
             $itemSelect.empty();
             $itemSelect.append('<option value="">Select Item</option>');
             for (const item of response.data || response) {
-                $itemSelect.append(`<option value="${item.itemcode}" data-name="${item.description}" data-price="${item.unitPrice}" data-qty="${item.qtyOnHand}">${item.itemcode}</option>`);
+                $itemSelect.append(`<option value="${item.code}" data-name="${item.description}" data-price="${item.unitPrice}" data-qty="${item.qtyOnHand}">${item.code}</option>`);
             }
         },
         error: function (error) {
@@ -98,7 +114,7 @@ $('#addItemBtn').click(function () {
         const row = `<tr>
             <td>${orderId}</td>
             <td>${customerName}</td>
-            <td>${itemName}</td>
+            <td>${itemCode}</td>
             <td>${itemQty}</td>
             <td>${itemPrice}</td>
             <td>${totalPrice}</td>
@@ -130,16 +146,56 @@ function validateForm() {
     return true;
 }
 
+// Populate order confirmation modal with selected items
+function populateOrderConfirmationModal() {
+    const $orderTable = $('#orderTable');
+    const $orderConfirmTable = $('#orderConfirmTable tbody');
+    $orderConfirmTable.empty();
+
+    $orderTable.find('tr').each(function () {
+        const $row = $(this);
+        const orderId = $row.find('td:eq(0)').text();
+        const customerName = $row.find('td:eq(1)').text();
+        const itemName = $row.find('td:eq(2)').text();
+        const itemQty = $row.find('td:eq(3)').text();
+        const itemPrice = $row.find('td:eq(4)').text();
+        const totalPrice = $row.find('td:eq(5)').text();
+        const orderDate = $row.find('td:eq(6)').text();
+
+        const confirmRow = `<tr>
+            <td>${orderId}</td>
+            <td>${customerName}</td>
+            <td>${itemName}</td>
+            <td>${itemQty}</td>
+            <td>${itemPrice}</td>
+            <td>${totalPrice}</td>
+            <td>${orderDate}</td>
+        </tr>`;
+        $orderConfirmTable.append(confirmRow);
+    });
+}
+
 // Save order
 function saveOrder() {
     const orderId = $('#orderId').val();
     const dateTime = $('#orderDate').val();
     const customerId = $('#customerId').val();
-    const itemCode = $('#itemCode').val();
-    const orderQty = $('#orderQty').val();
-    const total = $('#totalPrice').val();
+    const orderDetails = [];
 
-    if (!orderId || !dateTime || !customerId || !itemCode || !orderQty || !total) {
+    $('#orderConfirmTable tbody tr').each(function () {
+        const itemCode = $(this).find('td:eq(2)').text();
+        const qty = $(this).find('td:eq(3)').text();
+        const subTotal = $(this).find('td:eq(5)').text();
+
+        orderDetails.push({
+            orderId: orderId,
+            itemCode: itemCode,
+            qty: qty,
+            subTotal: subTotal
+        });
+    });
+
+    if (!orderId || !dateTime || !customerId || orderDetails.length === 0) {
         showAlert("error", "All fields are required!");
         return;
     }
@@ -148,12 +204,7 @@ function saveOrder() {
         orderId: orderId,
         dateTime: dateTime,
         customerId: customerId,
-        orderDetails: [{
-            orderId: orderId,
-            itemCode: itemCode,
-            qty: orderQty,
-            subTotal: total
-        }]
+        orderDetails: orderDetails
     };
 
     $.ajax({

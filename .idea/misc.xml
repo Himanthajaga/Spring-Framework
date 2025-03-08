@@ -17,12 +17,20 @@
         <option value="$PROJECT_DIR$/untitled/pom.xml" />
         <option value="$PROJECT_DIR$/_12Spring_Data_Jpa/pom.xml" />
         <option value="$PROJECT_DIR$/_13Spring_Boot/pom.xml" />
+        <option value="$PROJECT_DIR$/_13Spring_Boot/_15SpringSecurity/pom.xml" />
+        <option value="$PROJECT_DIR$/_13Spring_Boot/_15Spring_Security/pom.xml" />
+        <option value="$PROJECT_DIR$/_15Spring_Security/pom.xml" />
+        <option value="$PROJECT_DIR$/_16Spring_Boot_Bean_Validation/pom.xml" />
+        <option value="$PROJECT_DIR$/_16Spring_Boot_Security/pom.xml" />
+        <option value="$PROJECT_DIR$/_17_Spring_Loggins/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/_04Full_Mode_vs_lightMode/_05Configuraton/pom.xml" />
         <option value="$PROJECT_DIR$/_10FrontEnd/pom.xml" />
+        <option value="$PROJECT_DIR$/_13Spring_Boot/_15Spring_Security/pom.xml" />
+        <option value="$PROJECT_DIR$/_16Spring_Boot_Bean_Validation/pom.xml" />
       </set>
     </option>
     <option name="workspaceImportForciblyTurnedOn" value="true" />

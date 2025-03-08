@@ -12,10 +12,6 @@ public class CustomerDTO {
     private String name;
     private String address;
 
-    public int getId() {
-        return id;
-    }
-
     public CustomerDTO() {
     }
 
@@ -23,6 +19,10 @@ public class CustomerDTO {
         this.id = id;
         this.name = name;
         this.address = address;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void setId(int id) {
@@ -43,5 +43,14 @@ public class CustomerDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                '}';
     }
 }

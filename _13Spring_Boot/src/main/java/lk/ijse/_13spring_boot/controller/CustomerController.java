@@ -16,8 +16,8 @@ public class CustomerController {
     private CustomerServiceImpl customerService;
     @PostMapping(path = "/save")
     public ResponseUtil getCustomer(@RequestBody CustomerDTO customerDTO) {
-        System.out.println(customerDTO);
-
+        System.out.println("customer save");
+ customerService.save(customerDTO);
            return new ResponseUtil(201,"customer saved successfully",null);
     }
     @GetMapping(path = "/get")

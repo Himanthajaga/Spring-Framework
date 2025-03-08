@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 @Entity
 public class Item {
     @Id
-    private String itemcode;
+    private String code;
     private String description;
     private double unitPrice;
     private int qtyOnHand;
@@ -14,39 +14,39 @@ public class Item {
     public Item() {
     }
 
-    public Item(int code, String description, double unitPrice, int qtyOnHand) {
-        this.itemcode = String.valueOf(code);
+    public Item(String code, String description, double unitPrice, int qtyOnHand) {
+        this.code = code;
         this.description = description;
         this.unitPrice = unitPrice;
         this.qtyOnHand = qtyOnHand;
     }
 
     public String getCode() {
-        return itemcode;
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public double getUnitPrice() {
-        return unitPrice;
-    }
-
-    public int getQtyOnHand() {
-        return qtyOnHand;
-    }
-
-    public void setCode(int code) {
-        this.itemcode = String.valueOf(code);
-    }
-
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public int getQtyOnHand() {
+        return qtyOnHand;
     }
 
     public void setQtyOnHand(int qtyOnHand) {
@@ -56,7 +56,7 @@ public class Item {
     @Override
     public String toString() {
         return "Item{" +
-                "code=" +itemcode+
+                "code='" + code + '\'' +
                 ", description='" + description + '\'' +
                 ", unitPrice=" + unitPrice +
                 ", qtyOnHand=" + qtyOnHand +

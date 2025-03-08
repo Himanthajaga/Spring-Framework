@@ -16,5 +16,15 @@
         </sourceRoots>
       </configuration>
     </facet>
+    <facet type="web" name="Web2">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/_08Spring_Web_Mvc/web/WEB-INF/web.xml" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/_08Spring_Web_Mvc/web" relative="/" />
+        </webroots>
+      </configuration>
+    </facet>
   </component>
 </module>

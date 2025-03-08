@@ -17,22 +17,23 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepo ordersRepo;
-
-    @Autowired
-    private OrderDetailsRepo orderDetailsRepo;
-
+    
     @Autowired
     private ItemRepo itemRepo;
 
     @Autowired
     private ModelMapper modelMapper;
+
+    private static final Logger logger = Logger.getLogger(OrderServiceImpl.class.getName());
 
     @Override
     @Transactional
@@ -51,6 +52,11 @@ public class OrderServiceImpl implements OrderService {
             if (!checkItemsInStock(orderDTO.getOrderDetails())) {
                 throw new RuntimeException("Items are out of stock.");
             }
+
+            // Generate next order ID
+            String lastOrderId = ordersRepo.findLastOrderId();
+            String nextOrderId = generateNextOrderId(lastOrderId);
+            orderDTO.setOrderId(nextOrderId);
 
             // Create Order
             Orders order = new Orders();
@@ -82,8 +88,7 @@ public class OrderServiceImpl implements OrderService {
             }
 
             order.setOrderDetails(orderDetails);
-            ordersRepo.save(modelMapper.map(order, Orders.class));
-
+            ordersRepo.save(order);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,13 +96,26 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    private String generateNextOrderId(String lastOrderId) {
+        if (lastOrderId == null || lastOrderId.isEmpty()) {
+            return "ORD-001";
+        }
+        int lastIdNum = Integer.parseInt(lastOrderId.replace("ORD-", ""));
+        int nextIdNum = lastIdNum + 1;
+        return String.format("ORD-%03d", nextIdNum);
+    }
+
     @Override
     public boolean checkItemsInStock(List<OrderDetailDTO> orderDetails) {
         for (OrderDetailDTO detail : orderDetails) {
-            Item item = itemRepo.findById(detail.getItemCode()).orElse(null);
-
-            if (item == null || item.getQtyOnHand() < detail.getQty()) {
-                throw new RuntimeException("Item " + detail.getItemCode() + " is out of stock.");
+            logger.info("Checking stock for item: " + detail.getItemCode());
+            Optional<Item> itemOpt = itemRepo.findById(detail.getItemCode());
+            if (itemOpt.isEmpty()) {
+                throw new RuntimeException("Item not found: " + detail.getItemCode());
+            }
+            Item item = itemOpt.get();
+            if (item.getQtyOnHand() < detail.getQty()) {
+                throw new RuntimeException("Item " + item.getDescription() + " is out of stock.");
             }
         }
         return true;
@@ -112,7 +130,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-   @Transactional
+    @Transactional
     public List<OrderDTO> getAllOrders() {
         return ordersRepo.findAll().stream()
                 .map(this::mapToDTO)
@@ -140,5 +158,10 @@ public class OrderServiceImpl implements OrderService {
                 detail.getSubTotal(),
                 detail.getOrder().getOrderId()
         );
+    }
+
+    @Override
+    public String getLastOrderId() {
+        return ordersRepo.findLastOrderId();
     }
 }

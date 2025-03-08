@@ -17,6 +17,7 @@ public class ItemController {
     @PostMapping(path = "/save")
     public ResponseUtil getCustomer(@RequestBody ItemDTO itemDTO){
         System.out.println(itemDTO);
+        itemService.save(itemDTO);
         return new ResponseUtil(500,"Customer save failed",null);
     }
     @GetMapping(path = "/get")
